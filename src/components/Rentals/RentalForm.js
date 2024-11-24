@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, TextField, Paper, MenuItem } from "@mui/material";
 import {
   createRental,
@@ -21,38 +21,41 @@ const RentalForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchBooks();
-    fetchUsers();
-    if (id) fetchRental();
+  // Memoized functions to prevent re-creation on every render
+  const fetchRental = useCallback(async () => {
+    if (id) {
+      try {
+        const response = await getRentalById(id);
+        setRental(response.data);
+      } catch (error) {
+        console.error("Error fetching rental:", error);
+      }
+    }
   }, [id]);
 
-  const fetchRental = async () => {
-    try {
-      const response = await getRentalById(id);
-      setRental(response.data);
-    } catch (error) {
-      console.error("Error fetching rental:", error);
-    }
-  };
-
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     try {
       const response = await getBooks();
       setBooks(response.data);
     } catch (error) {
       console.error("Error fetching books:", error);
     }
-  };
+  }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await getUsers();
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchBooks();
+    fetchUsers();
+    fetchRental();
+  }, [fetchBooks, fetchUsers, fetchRental]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

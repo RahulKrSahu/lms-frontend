@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import DashboardPage from "./pages/DashboardPage";
 import Navbar from "./components/Navbar";
 import AuthorsPage from "./pages/AuthorsPage";
 import BooksPage from "./pages/BooksPage";
@@ -18,6 +19,7 @@ const App = () => {
       <div style={{ marginTop: "16px" }}>
         <Routes>
           <Route path="/" element={<Navigate to="/authors" />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/authors/*" element={<AuthorsPage />} />
           <Route path="/books/*" element={<BooksPage />} />
           <Route path="/rentals/*" element={<RentalsPage />} />

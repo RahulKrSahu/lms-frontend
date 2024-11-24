@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, TextField, Paper } from "@mui/material";
 import {
   createAuthor,
@@ -12,20 +12,20 @@ const AuthorForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (id) {
-      fetchAuthor();
-    }
-  }, [id]);
-
-  const fetchAuthor = async () => {
+  const fetchAuthor = useCallback(async () => {
     try {
       const response = await getAuthorById(id);
       setName(response.data.name);
     } catch (error) {
       console.error("Error fetching author:", error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchAuthor();
+    }
+  }, [id, fetchAuthor]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

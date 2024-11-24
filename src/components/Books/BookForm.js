@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, TextField, Paper, MenuItem } from "@mui/material";
 import {
   createBook,
@@ -20,28 +20,31 @@ const BookForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchAuthors();
-    if (id) fetchBook();
+  // Memoized functions to prevent re-creation on every render
+  const fetchBook = useCallback(async () => {
+    if (id) {
+      try {
+        const response = await getBookById(id);
+        setBook(response.data);
+      } catch (error) {
+        console.error("Error fetching book:", error);
+      }
+    }
   }, [id]);
 
-  const fetchBook = async () => {
-    try {
-      const response = await getBookById(id);
-      setBook(response.data);
-    } catch (error) {
-      console.error("Error fetching book:", error);
-    }
-  };
-
-  const fetchAuthors = async () => {
+  const fetchAuthors = useCallback(async () => {
     try {
       const response = await getAuthors();
       setAuthors(response.data);
     } catch (error) {
       console.error("Error fetching authors:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAuthors();
+    fetchBook();
+  }, [fetchAuthors, fetchBook]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, TextField, Paper } from "@mui/material";
 import {
   createUser,
@@ -12,18 +12,21 @@ const UserForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (id) fetchUser();
+  // Memoize fetchUser to avoid re-creation on every render
+  const fetchUser = useCallback(async () => {
+    if (id) {
+      try {
+        const response = await getUserById(id);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
   }, [id]);
 
-  const fetchUser = async () => {
-    try {
-      const response = await getUserById(id);
-      setUser(response.data);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
-  };
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
