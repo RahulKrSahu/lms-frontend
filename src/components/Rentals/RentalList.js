@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import {
   getRentals,
-  deleteRental,
   markAsReturned,
   markAsLost,
 } from "../../services/rentalService";
@@ -31,17 +30,6 @@ const RentalList = () => {
       setRentals(response.data);
     } catch (error) {
       console.error("Error fetching rentals:", error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this rental?")) {
-      try {
-        await deleteRental(id);
-        fetchRentals();
-      } catch (error) {
-        console.error("Error deleting rental:", error);
-      }
     }
   };
 
@@ -75,6 +63,7 @@ const RentalList = () => {
             <TableCell>Due Date</TableCell>
             <TableCell>Return Date</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Fee</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -95,6 +84,11 @@ const RentalList = () => {
                   : "Active"}
               </TableCell>
               <TableCell>
+                {rental.fee !== null && rental.fee !== undefined
+                  ? rental.fee.toFixed(2)
+                  : "N/A"}
+              </TableCell>
+              <TableCell>
                 <Button
                   variant="contained"
                   color="primary"
@@ -102,14 +96,6 @@ const RentalList = () => {
                   style={{ marginRight: "8px" }}
                 >
                   Edit
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleDelete(rental.id)}
-                  style={{ marginRight: "8px" }}
-                >
-                  Delete
                 </Button>
                 {!rental.isReturned && !rental.lost && (
                   <>
