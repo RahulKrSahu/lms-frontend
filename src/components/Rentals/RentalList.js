@@ -68,57 +68,67 @@ const RentalList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rentals.map((rental) => (
-            <TableRow key={rental.id}>
-              <TableCell>{rental.id}</TableCell>
-              <TableCell>{rental.book.title}</TableCell>
-              <TableCell>{rental.user.name}</TableCell>
-              <TableCell>{rental.rentalDate}</TableCell>
-              <TableCell>{rental.dueDate}</TableCell>
-              <TableCell>{rental.returnDate || "Not Returned"}</TableCell>
-              <TableCell>
-                {rental.lost
-                  ? "Lost"
-                  : rental.isReturned
-                  ? "Returned"
-                  : "Active"}
-              </TableCell>
-              <TableCell>
-                {rental.fee !== null && rental.fee !== undefined
-                  ? rental.fee.toFixed(2)
-                  : "N/A"}
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => navigate(`/rentals/edit/${rental.id}`)}
-                  style={{ marginRight: "8px" }}
-                >
-                  Edit
-                </Button>
-                {!rental.isReturned && !rental.lost && (
-                  <>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={() => handleMarkAsReturned(rental.id)}
-                      style={{ marginRight: "8px" }}
-                    >
-                      Mark as Returned
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleMarkAsLost(rental.id)}
-                    >
-                      Mark as Lost
-                    </Button>
-                  </>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
+          {rentals.map((rental) => {
+            const isDisabled = rental.isReturned || rental.lost; // Determine if the record should be disabled
+            return (
+              <TableRow
+                key={rental.id}
+                style={{
+                  backgroundColor: isDisabled ? "#f5f5f5" : "white",
+                  color: isDisabled ? "#9e9e9e" : "black",
+                }}
+              >
+                <TableCell>{rental.id}</TableCell>
+                <TableCell>{rental.book.title}</TableCell>
+                <TableCell>{rental.user.name}</TableCell>
+                <TableCell>{rental.rentalDate}</TableCell>
+                <TableCell>{rental.dueDate}</TableCell>
+                <TableCell>{rental.returnDate || "Not Returned"}</TableCell>
+                <TableCell>
+                  {rental.lost
+                    ? "Lost"
+                    : rental.isReturned
+                    ? "Returned"
+                    : "Active"}
+                </TableCell>
+                <TableCell>
+                  {rental.fee !== null && rental.fee !== undefined
+                    ? rental.fee.toFixed(2)
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate(`/rentals/edit/${rental.id}`)}
+                    style={{ marginRight: "8px" }}
+                    disabled={isDisabled}
+                  >
+                    Edit
+                  </Button>
+                  {!rental.isReturned && !rental.lost && (
+                    <>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => handleMarkAsReturned(rental.id)}
+                        style={{ marginRight: "8px" }}
+                      >
+                        Mark as Returned
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleMarkAsLost(rental.id)}
+                      >
+                        Mark as Lost
+                      </Button>
+                    </>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
